@@ -6,14 +6,19 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@hf/contracts": "workspace:*",
-    "@hf/ui": "workspace:*"
+    "@hf/ui": "workspace:*",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@hf/config": "workspace:*",
+    "eslint": "catalog:",
     "typescript": "catalog:"
   }
 }

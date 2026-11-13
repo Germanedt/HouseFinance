@@ -5,21 +5,45 @@
   "description": "Configuración compartida: tsconfig, ESLint y Prettier",
   "type": "module",
   "exports": {
-    "./tsconfig.base.json": "./tsconfig.base.json",
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./eslint": {
+      "types": "./dist/eslint/index.d.ts",
+      "default": "./dist/eslint/index.js"
+    },
+    "./eslint/next": {
+      "types": "./dist/eslint/next.config.d.ts",
+      "default": "./dist/eslint/next.config.js"
+    },
+    "./prettier": "./prettier.json",
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.nextjs.json": "./tsconfig.nextjs.json"
   },
   "files": [
     "dist",
-    "tsconfig.base.json"
+    "prettier.json",
+    "tsconfig.base.json",
+    "tsconfig.nextjs.json"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@eslint/js": "catalog:",
+    "eslint-config-next": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "peerDependencies": {
+    "eslint": "^9.39.0"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
     "typescript": "catalog:"
   }
 }
