@@ -5,4 +5,5 @@
 //   @hf/config/eslint                createBaseConfig
 //   @hf/config/eslint/next           createNextConfig (apps/web)
 //   @hf/config/prettier              configuración de Prettier
+//   @hf/config/vitest                createVitestConfig
 export type { Layer } from './eslint/layers.js';

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    // Hasta F0-15 el build de la web solo comprueba tipos (noEmit) y no genera archivos.
+    // F0-15 lo cambia a `next build` y vuelve a declarar .next/** como salida.
+    "build": {
+      "outputs": []
+    }
+  }
+}
