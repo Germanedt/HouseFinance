@@ -1,0 +1,28 @@
+{
+  "name": "@hf/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Infraestructura de datos: esquema Drizzle, migraciones y repositorios",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hf/application": "workspace:*",
+    "@hf/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@hf/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

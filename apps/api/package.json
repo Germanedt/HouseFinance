@@ -1,0 +1,21 @@
+{
+  "name": "@hf/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "API HTTP (Hono): entrada y composición",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hf/contracts": "workspace:*",
+    "@hf/application": "workspace:*",
+    "@hf/db": "workspace:*",
+    "@hf/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@hf/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

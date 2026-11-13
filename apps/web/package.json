@@ -1,0 +1,19 @@
+{
+  "name": "@hf/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Web (Next.js): presentación",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hf/contracts": "workspace:*",
+    "@hf/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@hf/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
