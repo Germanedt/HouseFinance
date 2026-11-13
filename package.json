@@ -1,0 +1,22 @@
+{
+  "name": "housefinance",
+  "version": "0.0.0",
+  "private": true,
+  "description": "HouseFinance · Finanzas del hogar (monorepo)",
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "2.11.11",
+    "typescript": "catalog:"
+  }
+}

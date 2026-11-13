@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Versiones compartidas por todo el monorepo (se usan con "catalog:" en cada package.json).
+catalog:
+  typescript: 6.0.3

@@ -1,0 +1,27 @@
+{
+  "name": "@hf/application",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Casos de uso y puertos",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hf/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@hf/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
