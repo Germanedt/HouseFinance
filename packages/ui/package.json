@@ -15,10 +15,12 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@hf/config": "workspace:*",
+    "eslint": "catalog:",
     "typescript": "catalog:"
   }
 }

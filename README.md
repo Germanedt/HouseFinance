@@ -15,14 +15,14 @@ App móvil-first para consolidar a mano las finanzas del hogar: créditos, servi
 
 ## Stack
 
-| Pieza | Tecnología |
-|---|---|
-| Monorepo | pnpm + Turborepo |
-| Web | Next.js 16 (App Router), Tailwind CSS, shadcn/ui, next-intl, TanStack Query |
-| API | Hono con `@hono/zod-openapi` (OpenAPI 3.1) |
-| Datos | Supabase (Postgres y Auth, Frankfurt) con Drizzle ORM |
-| Despliegue | Vercel (web, API y cron) |
-| Calidad | TypeScript estricto, ESLint, Prettier, Vitest, Playwright y GitHub Actions |
+| Pieza      | Tecnología                                                                  |
+| ---------- | --------------------------------------------------------------------------- |
+| Monorepo   | pnpm + Turborepo                                                            |
+| Web        | Next.js 16 (App Router), Tailwind CSS, shadcn/ui, next-intl, TanStack Query |
+| API        | Hono con `@hono/zod-openapi` (OpenAPI 3.1)                                  |
+| Datos      | Supabase (Postgres y Auth, Frankfurt) con Drizzle ORM                       |
+| Despliegue | Vercel (web, API y cron)                                                    |
+| Calidad    | TypeScript estricto, ESLint, Prettier, Vitest, Playwright y GitHub Actions  |
 
 La arquitectura sigue **Clean Architecture** y **SOLID**: el dominio no depende de nada y las dependencias apuntan siempre hacia dentro.
 
@@ -47,27 +47,27 @@ packages/
 
 ## Ramas y versiones
 
-| Rama | Uso | Se integra en |
-|---|---|---|
-| `main` | Fases completas; es lo que se despliega | — |
-| `feature/F<n>` | Una por fase del plan (`feature/F3`) | `main` |
+| Rama                  | Uso                                                      | Se integra en  |
+| --------------------- | -------------------------------------------------------- | -------------- |
+| `main`                | Fases completas; es lo que se despliega                  | —              |
+| `feature/F<n>`        | Una por fase del plan (`feature/F3`)                     | `main`         |
 | `feature/F<n>-US<nn>` | Una por historia o tarea del backlog (`feature/F3-US09`) | `feature/F<n>` |
 
-- Todo entra por pull request, con la CI en verde y fusión *merge commit*. No se hace push directo a `main` ni a las ramas de fase.
+- Todo entra por pull request, con la CI en verde y fusión _merge commit_. No se hace push directo a `main` ni a las ramas de fase.
 - Los elementos de una fase se desarrollan de uno en uno y en el orden del backlog.
 - Al integrar cada fase se etiqueta `main`: de `v0.1.0` (fase 0) a `v0.8.0` (fase 7). La fase 8 cierra el MVP con la **`v1.0.0`**.
 
-| Fase | Módulo | Versión |
-|---|---|---|
-| 0 | Cimientos | v0.1.0 |
-| 1 | Sesión | v0.2.0 |
-| 2 | Actores | v0.3.0 |
-| 3 | Obligaciones | v0.4.0 |
-| 4 | Recibos, pagos, cobros y job diario | v0.5.0 |
-| 5 | Aportes y ajustes | v0.6.0 |
-| 6 | Ingresos | v0.7.0 |
-| 7 | Inicio, Hoy y avisos | v0.8.0 |
-| 8 | Cierre del MVP | **v1.0.0** |
+| Fase | Módulo                              | Versión    |
+| ---- | ----------------------------------- | ---------- |
+| 0    | Cimientos                           | v0.1.0     |
+| 1    | Sesión                              | v0.2.0     |
+| 2    | Actores                             | v0.3.0     |
+| 3    | Obligaciones                        | v0.4.0     |
+| 4    | Recibos, pagos, cobros y job diario | v0.5.0     |
+| 5    | Aportes y ajustes                   | v0.6.0     |
+| 6    | Ingresos                            | v0.7.0     |
+| 7    | Inicio, Hoy y avisos                | v0.8.0     |
+| 8    | Cierre del MVP                      | **v1.0.0** |
 
 ## Puesta en marcha
 
