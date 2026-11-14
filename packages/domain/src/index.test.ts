@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import * as publicApi from './index.js';
 
-// Prueba de ejemplo (F0-03): comprueba que el punto de entrada del paquete carga.
-// Las pruebas reales llegan con el código de cada tarea del backlog.
 describe('@hf/domain public API', () => {
-  it('loads the package entry point', () => {
-    expect(publicApi).toBeTypeOf('object');
+  it('exposes the shared value objects and errors', () => {
+    expect(publicApi.Money.fromCents(1).cents).toBe(1);
+    expect(publicApi.DomainError).toBeTypeOf('function');
+    expect(publicApi.InvalidMoneyError).toBeTypeOf('function');
   });
 });
