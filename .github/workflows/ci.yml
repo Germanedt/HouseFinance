@@ -27,6 +27,8 @@ jobs:
     timeout-minutes: 20
     env:
       TURBO_TELEMETRY_DISABLED: 1
+      # Base de `turbo --affected`: la rama de destino del pull request tal como la deja el checkout.
+      TURBO_SCM_BASE: origin/${{ github.base_ref }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
