@@ -1,0 +1,55 @@
+# CI de HouseFinance (F0-04).
+# Se ejecuta en cada pull request hacia main o hacia una rama de fase (feature/F<n>).
+# Orden: instalación con caché de pnpm → lint, typecheck y test solo en lo afectado → build.
+# F0-10 añade la comprobación de migraciones y las pruebas de integración con Postgres.
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - 'feature/F[0-9]'
+      - 'feature/F[0-9][0-9]'
+
+# Un push nuevo al mismo pull request cancela la ejecución anterior.
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    # Este nombre es el que exige como obligatorio la protección de ramas.
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TURBO_TELEMETRY_DISABLED: 1
+      # Base de `turbo --affected`: la rama de destino del pull request tal como la deja el checkout.
+      TURBO_SCM_BASE: origin/${{ github.base_ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # Historial completo: `turbo --affected` compara con la rama de destino del pull request.
+          fetch-depth: 0
+
+      - name: Instalar pnpm (versión de packageManager)
+        uses: pnpm/action-setup@v6
+
+      - name: Instalar Node (versión de .nvmrc) con caché de pnpm
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint, typecheck y test (solo lo afectado)
+        run: pnpm turbo run lint typecheck test --affected
+
+      - name: Build
+        run: pnpm turbo run build
