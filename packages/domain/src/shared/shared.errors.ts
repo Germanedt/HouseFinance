@@ -1,48 +1,33 @@
-import { DomainError } from './DomainError.js';
+// Errores de los objetos de valor compartidos (Money, CalendarDate, YearMonth).
+// Son barreras defensivas: el contrato de la API ya rechaza estos valores antes de llegar al
+// dominio, y las reglas de negocio (p. ej. `PRINCIPAL_EXCEEDS_BALANCE`) se validan antes de operar.
+// Todos son `ValidationError` (VALIDATION_ERROR + fields), con `path` = el argumento que falló.
+import { ValidationError, type FieldError } from './DomainError.js';
 
-/** Motivo por el que un importe no es válido; usa los códigos de campo del catálogo. */
-export type InvalidMoneyReason = 'NOT_INTEGER' | 'OUT_OF_RANGE';
+export type InvalidMoneyFieldCode = 'NOT_INTEGER' | 'OUT_OF_RANGE';
 
-export type InvalidMoneyDetails = {
-  readonly reason: InvalidMoneyReason;
-  readonly value: number;
-};
-
-/**
- * Importe que no cumple las reglas de `Money`: céntimos enteros, seguros y >= 0.
- * Es una barrera defensiva: el contrato de la API ya rechaza estos valores antes de llegar al
- * dominio, y las reglas de negocio (p. ej. `PRINCIPAL_EXCEEDS_BALANCE`) se validan antes de operar.
- */
-export class InvalidMoneyError extends DomainError<'VALIDATION_ERROR', InvalidMoneyDetails> {
-  constructor(details: InvalidMoneyDetails) {
-    super('VALIDATION_ERROR', details);
+/** Importe que no es un entero de céntimos seguro y >= 0. */
+export class InvalidMoneyError extends ValidationError<InvalidMoneyFieldCode> {
+  constructor(field: FieldError<InvalidMoneyFieldCode>) {
+    super([field]);
   }
 }
 
-/** Motivo por el que una fecha o un mes no son válidos; usa los códigos de campo del catálogo. */
-export type InvalidCalendarReason = 'INVALID_FORMAT' | 'INVALID_DATE' | 'OUT_OF_RANGE';
-
-export type InvalidCalendarDetails = {
-  readonly reason: InvalidCalendarReason;
-  readonly value: string | number;
-};
+export type InvalidCalendarFieldCode = 'INVALID_FORMAT' | 'INVALID_DATE' | 'OUT_OF_RANGE';
 
 /**
  * Fecha de calendario no válida: formato distinto de YYYY-MM-DD, fecha inexistente
- * (`2026-02-30`) o fuera del rango de años 0001–9999. Barrera defensiva, como `InvalidMoneyError`.
+ * (`2026-02-30`) o fuera de los años 0001–9999.
  */
-export class InvalidCalendarDateError extends DomainError<
-  'VALIDATION_ERROR',
-  InvalidCalendarDetails
-> {
-  constructor(details: InvalidCalendarDetails) {
-    super('VALIDATION_ERROR', details);
+export class InvalidCalendarDateError extends ValidationError<InvalidCalendarFieldCode> {
+  constructor(field: FieldError<InvalidCalendarFieldCode>) {
+    super([field]);
   }
 }
 
 /** Mes no válido: formato distinto de YYYY-MM, mes inexistente o día N fuera de 1–28. */
-export class InvalidYearMonthError extends DomainError<'VALIDATION_ERROR', InvalidCalendarDetails> {
-  constructor(details: InvalidCalendarDetails) {
-    super('VALIDATION_ERROR', details);
+export class InvalidYearMonthError extends ValidationError<InvalidCalendarFieldCode> {
+  constructor(field: FieldError<InvalidCalendarFieldCode>) {
+    super([field]);
   }
 }

@@ -18,10 +18,10 @@ export class Money {
   /** Crea un importe desde céntimos enteros >= 0. Lanza `InvalidMoneyError` si no lo son. */
   static fromCents(cents: number): Money {
     if (!Number.isInteger(cents)) {
-      throw new InvalidMoneyError({ reason: 'NOT_INTEGER', value: cents });
+      throw new InvalidMoneyError({ path: 'cents', code: 'NOT_INTEGER' });
     }
     if (cents < 0 || !Number.isSafeInteger(cents)) {
-      throw new InvalidMoneyError({ reason: 'OUT_OF_RANGE', value: cents });
+      throw new InvalidMoneyError({ path: 'cents', code: 'OUT_OF_RANGE' });
     }
     // Normaliza -0 a 0.
     return new Money(cents === 0 ? 0 : cents);

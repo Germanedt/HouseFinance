@@ -3,15 +3,23 @@ export {
   type CalendarComparison,
   type DayOfWeek,
 } from './CalendarDate.value-object.js';
-export { DomainError } from './DomainError.js';
+export {
+  DomainError,
+  NotFoundError,
+  ValidationError,
+  type ErrorCode,
+  type ErrorDetails,
+  type FieldError,
+  type FieldErrorCode,
+  type NotFoundDetails,
+  type NotFoundResource,
+} from './DomainError.js';
 export { Money, type MoneyComparison } from './Money.value-object.js';
 export {
   InvalidCalendarDateError,
   InvalidMoneyError,
   InvalidYearMonthError,
-  type InvalidCalendarDetails,
-  type InvalidCalendarReason,
-  type InvalidMoneyDetails,
-  type InvalidMoneyReason,
+  type InvalidCalendarFieldCode,
+  type InvalidMoneyFieldCode,
 } from './shared.errors.js';
 export { YearMonth } from './YearMonth.value-object.js';

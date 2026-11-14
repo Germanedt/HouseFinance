@@ -40,11 +40,11 @@ export class CalendarDate {
   static fromString(value: string): CalendarDate {
     const match = ISO_DATE_PATTERN.exec(value);
     if (match === null) {
-      throw new InvalidCalendarDateError({ reason: 'INVALID_FORMAT', value });
+      throw new InvalidCalendarDateError({ path: 'date', code: 'INVALID_FORMAT' });
     }
     const parts = { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
     if (!isValidCivilDate(parts)) {
-      throw new InvalidCalendarDateError({ reason: 'INVALID_DATE', value });
+      throw new InvalidCalendarDateError({ path: 'date', code: 'INVALID_DATE' });
     }
     return new CalendarDate(parts.year, parts.month, parts.day);
   }
@@ -52,10 +52,7 @@ export class CalendarDate {
   /** Crea una fecha desde sus partes (mes 1–12). Rechaza fechas inexistentes. */
   static of(year: number, month: number, day: number): CalendarDate {
     if (!isValidCivilDate({ year, month, day })) {
-      throw new InvalidCalendarDateError({
-        reason: 'INVALID_DATE',
-        value: `${padNumber(year, 4)}-${padNumber(month, 2)}-${padNumber(day, 2)}`,
-      });
+      throw new InvalidCalendarDateError({ path: 'date', code: 'INVALID_DATE' });
     }
     return new CalendarDate(year, month, day);
   }
@@ -63,7 +60,7 @@ export class CalendarDate {
   private static fromEpochDay(epochDay: number): CalendarDate {
     const { year, month, day } = fromEpochDay(epochDay);
     if (!isValidYear(year)) {
-      throw new InvalidCalendarDateError({ reason: 'OUT_OF_RANGE', value: epochDay });
+      throw new InvalidCalendarDateError({ path: 'days', code: 'OUT_OF_RANGE' });
     }
     return new CalendarDate(year, month, day);
   }
@@ -90,7 +87,7 @@ export class CalendarDate {
   /** Suma días (un número negativo resta). Fuera de los años 0001–9999 lanza `OUT_OF_RANGE`. */
   addDays(days: number): CalendarDate {
     if (!Number.isSafeInteger(days)) {
-      throw new InvalidCalendarDateError({ reason: 'OUT_OF_RANGE', value: days });
+      throw new InvalidCalendarDateError({ path: 'days', code: 'OUT_OF_RANGE' });
     }
     return CalendarDate.fromEpochDay(this.epochDay + days);
   }
