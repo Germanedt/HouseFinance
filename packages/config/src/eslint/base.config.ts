@@ -18,7 +18,16 @@ export type BaseConfigOptions = {
 };
 
 const SOURCE_FILES = ['src/**/*.{ts,tsx}'];
+const TEST_FILES = ['src/**/*.test.{ts,tsx}'];
 const JS_FILES = ['**/*.{js,mjs,cjs}'];
+
+function restrictedImportsRule(layer: Layer, isTestFile: boolean): Linter.RuleEntry {
+  const patterns = getRestrictedImportPatterns(layer, { isTestFile });
+  return [
+    'error',
+    { patterns: patterns.map((pattern) => ({ ...pattern, group: [...pattern.group] })) },
+  ];
+}
 
 /**
  * Configuración de ESLint común a todo el monorepo:
@@ -49,11 +58,20 @@ export function createBaseConfig(options: BaseConfigOptions): Linter.Config[] {
     },
     {
       files: SOURCE_FILES,
+      ignores: TEST_FILES,
       rules: {
-        '@typescript-eslint/no-restricted-imports': [
-          'error',
-          { patterns: getRestrictedImportPatterns(layer).map((pattern) => ({ ...pattern })) },
-        ],
+        '@typescript-eslint/no-restricted-imports': restrictedImportsRule(layer, false),
+      },
+    },
+    {
+      files: TEST_FILES,
+      rules: {
+        '@typescript-eslint/no-restricted-imports': restrictedImportsRule(layer, true),
+      },
+    },
+    {
+      files: SOURCE_FILES,
+      rules: {
         // Tipo de retorno explícito en todo lo exportado.
         '@typescript-eslint/explicit-module-boundary-types': 'error',
         // Tipos con `type`, no con `interface` (props, modelos, entradas y salidas).

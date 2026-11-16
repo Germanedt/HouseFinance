@@ -1,3 +1,11 @@
 // API pública de @hf/application. Casos de uso y puertos.
-// Vacía en F0-01: cada tarea del backlog añade aquí sus exportaciones.
-export {};
+// Las implementaciones de prueba de los puertos están en @hf/application/testing.
+export type {
+  AuthService,
+  AuthSession,
+  AuthUser,
+  Clock,
+  HolidayCalendar,
+  SignInCredentials,
+  UnitOfWork,
+} from './shared/ports/index.js';
