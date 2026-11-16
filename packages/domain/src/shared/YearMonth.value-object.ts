@@ -29,11 +29,11 @@ export class YearMonth {
   static fromString(value: string): YearMonth {
     const match = YEAR_MONTH_PATTERN.exec(value);
     if (match === null) {
-      throw new InvalidYearMonthError({ reason: 'INVALID_FORMAT', value });
+      throw new InvalidYearMonthError({ path: 'yearMonth', code: 'INVALID_FORMAT' });
     }
     const parts = { year: Number(match[1]), month: Number(match[2]) };
     if (!isValidYear(parts.year) || !isValidMonth(parts.month)) {
-      throw new InvalidYearMonthError({ reason: 'INVALID_DATE', value });
+      throw new InvalidYearMonthError({ path: 'yearMonth', code: 'INVALID_DATE' });
     }
     return new YearMonth(parts.year, parts.month);
   }
@@ -41,10 +41,7 @@ export class YearMonth {
   /** Crea un mes desde sus partes (mes 1–12). */
   static of(year: number, month: number): YearMonth {
     if (!isValidYear(year) || !isValidMonth(month)) {
-      throw new InvalidYearMonthError({
-        reason: 'INVALID_DATE',
-        value: `${padNumber(year, 4)}-${padNumber(month, 2)}`,
-      });
+      throw new InvalidYearMonthError({ path: 'yearMonth', code: 'INVALID_DATE' });
     }
     return new YearMonth(year, month);
   }
@@ -71,12 +68,12 @@ export class YearMonth {
   /** Suma meses (un número negativo resta). Fuera de los años 0001–9999 lanza `OUT_OF_RANGE`. */
   addMonths(months: number): YearMonth {
     if (!Number.isSafeInteger(months)) {
-      throw new InvalidYearMonthError({ reason: 'OUT_OF_RANGE', value: months });
+      throw new InvalidYearMonthError({ path: 'months', code: 'OUT_OF_RANGE' });
     }
     const index = this.monthIndex + months;
     const year = Math.floor(index / 12);
     if (!isValidYear(year)) {
-      throw new InvalidYearMonthError({ reason: 'OUT_OF_RANGE', value: months });
+      throw new InvalidYearMonthError({ path: 'months', code: 'OUT_OF_RANGE' });
     }
     return new YearMonth(year, index - year * 12 + 1);
   }
@@ -96,7 +93,7 @@ export class YearMonth {
   /** Su día N, entre 1 y 28 (los días que existen en todos los meses). */
   atDay(day: number): CalendarDate {
     if (!Number.isInteger(day) || day < MIN_DAY_OF_MONTH || day > MAX_DAY_OF_MONTH) {
-      throw new InvalidYearMonthError({ reason: 'OUT_OF_RANGE', value: day });
+      throw new InvalidYearMonthError({ path: 'day', code: 'OUT_OF_RANGE' });
     }
     return CalendarDate.of(this.year, this.month, day);
   }

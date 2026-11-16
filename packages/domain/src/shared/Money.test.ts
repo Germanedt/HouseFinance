@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { DomainError } from './DomainError.js';
+import { DomainError, ValidationError } from './DomainError.js';
 import { Money } from './Money.value-object.js';
-import { InvalidMoneyError, type InvalidMoneyReason } from './shared.errors.js';
+import { InvalidMoneyError, type InvalidMoneyFieldCode } from './shared.errors.js';
 
 function cents(value: number): Money {
   return Money.fromCents(value);
@@ -16,19 +16,17 @@ function captureError(action: () => unknown): unknown {
   throw new Error('Expected the action to throw');
 }
 
-function expectInvalidMoney(
-  action: () => unknown,
-  reason: InvalidMoneyReason,
-  value: number,
-): void {
+function expectInvalidMoney(action: () => unknown, code: InvalidMoneyFieldCode): void {
   const error = captureError(action);
   expect(error).toBeInstanceOf(InvalidMoneyError);
+  expect(error).toBeInstanceOf(ValidationError);
   expect(error).toBeInstanceOf(DomainError);
   expect(error).toMatchObject({
     name: 'InvalidMoneyError',
     code: 'VALIDATION_ERROR',
     message: 'VALIDATION_ERROR',
-    details: { reason, value },
+    fields: [{ path: 'cents', code }],
+    details: undefined,
   });
 }
 
@@ -50,14 +48,14 @@ describe('Money', () => {
     it.each([0.5, 10.01, Number.NaN, Number.POSITIVE_INFINITY])(
       'rejects %s because it is not an integer',
       (value) => {
-        expectInvalidMoney(() => cents(value), 'NOT_INTEGER', value);
+        expectInvalidMoney(() => cents(value), 'NOT_INTEGER');
       },
     );
 
     it.each([-1, -100, Number.MAX_SAFE_INTEGER + 1])(
       'rejects %s because it is out of range',
       (value) => {
-        expectInvalidMoney(() => cents(value), 'OUT_OF_RANGE', value);
+        expectInvalidMoney(() => cents(value), 'OUT_OF_RANGE');
       },
     );
   });
@@ -97,11 +95,7 @@ describe('Money', () => {
     });
 
     it('rejects a sum beyond the safe integer range', () => {
-      expectInvalidMoney(
-        () => cents(Number.MAX_SAFE_INTEGER).add(cents(1)),
-        'OUT_OF_RANGE',
-        Number.MAX_SAFE_INTEGER + 1,
-      );
+      expectInvalidMoney(() => cents(Number.MAX_SAFE_INTEGER).add(cents(1)), 'OUT_OF_RANGE');
     });
   });
 
@@ -115,7 +109,7 @@ describe('Money', () => {
     });
 
     it('never goes below 0', () => {
-      expectInvalidMoney(() => cents(100).subtract(cents(101)), 'OUT_OF_RANGE', -1);
+      expectInvalidMoney(() => cents(100).subtract(cents(101)), 'OUT_OF_RANGE');
     });
   });
 

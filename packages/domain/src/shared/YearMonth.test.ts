@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DomainError } from './DomainError.js';
-import { InvalidYearMonthError, type InvalidCalendarReason } from './shared.errors.js';
+import { DomainError, ValidationError } from './DomainError.js';
+import { InvalidYearMonthError, type InvalidCalendarFieldCode } from './shared.errors.js';
 import { YearMonth } from './YearMonth.value-object.js';
 
 function month(value: string): YearMonth {
@@ -18,13 +18,14 @@ function captureError(action: () => unknown): unknown {
 
 function expectInvalidYearMonth(
   action: () => unknown,
-  reason: InvalidCalendarReason,
-  value: string | number,
+  code: InvalidCalendarFieldCode,
+  path: 'yearMonth' | 'months' | 'day' = 'yearMonth',
 ): void {
   const error = captureError(action);
   expect(error).toBeInstanceOf(InvalidYearMonthError);
+  expect(error).toBeInstanceOf(ValidationError);
   expect(error).toBeInstanceOf(DomainError);
-  expect(error).toMatchObject({ code: 'VALIDATION_ERROR', details: { reason, value } });
+  expect(error).toMatchObject({ code: 'VALIDATION_ERROR', fields: [{ path, code }] });
 }
 
 describe('YearMonth', () => {
@@ -36,13 +37,13 @@ describe('YearMonth', () => {
     });
 
     it.each(['2026-13', '2026-00', '0000-01'])('rejects the nonexistent month %s', (value) => {
-      expectInvalidYearMonth(() => month(value), 'INVALID_DATE', value);
+      expectInvalidYearMonth(() => month(value), 'INVALID_DATE');
     });
 
     it.each(['2026-1', '11-2026', '2026-11-01', '2026/11', ''])(
       'rejects the format %j',
       (value) => {
-        expectInvalidYearMonth(() => month(value), 'INVALID_FORMAT', value);
+        expectInvalidYearMonth(() => month(value), 'INVALID_FORMAT');
       },
     );
   });
@@ -53,7 +54,7 @@ describe('YearMonth', () => {
     });
 
     it('rejects nonexistent months', () => {
-      expectInvalidYearMonth(() => YearMonth.of(2026, 13), 'INVALID_DATE', '2026-13');
+      expectInvalidYearMonth(() => YearMonth.of(2026, 13), 'INVALID_DATE');
     });
   });
 
@@ -100,9 +101,9 @@ describe('YearMonth', () => {
     });
 
     it('rejects non-integer months and months beyond the supported years', () => {
-      expectInvalidYearMonth(() => month('2026-11').addMonths(0.5), 'OUT_OF_RANGE', 0.5);
-      expectInvalidYearMonth(() => month('9999-12').addMonths(1), 'OUT_OF_RANGE', 1);
-      expectInvalidYearMonth(() => month('0001-01').addMonths(-1), 'OUT_OF_RANGE', -1);
+      expectInvalidYearMonth(() => month('2026-11').addMonths(0.5), 'OUT_OF_RANGE', 'months');
+      expectInvalidYearMonth(() => month('9999-12').addMonths(1), 'OUT_OF_RANGE', 'months');
+      expectInvalidYearMonth(() => month('0001-01').addMonths(-1), 'OUT_OF_RANGE', 'months');
     });
   });
 
@@ -145,7 +146,7 @@ describe('YearMonth', () => {
     });
 
     it.each([0, 29, 31, 1.5])('rejects day %s', (day) => {
-      expectInvalidYearMonth(() => month('2026-03').atDay(day), 'OUT_OF_RANGE', day);
+      expectInvalidYearMonth(() => month('2026-03').atDay(day), 'OUT_OF_RANGE', 'day');
     });
   });
 });

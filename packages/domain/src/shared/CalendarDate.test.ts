@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CalendarDate } from './CalendarDate.value-object.js';
-import { DomainError } from './DomainError.js';
-import { InvalidCalendarDateError, type InvalidCalendarReason } from './shared.errors.js';
+import { DomainError, ValidationError } from './DomainError.js';
+import { InvalidCalendarDateError, type InvalidCalendarFieldCode } from './shared.errors.js';
 
 function date(value: string): CalendarDate {
   return CalendarDate.fromString(value);
@@ -18,13 +18,14 @@ function captureError(action: () => unknown): unknown {
 
 function expectInvalidDate(
   action: () => unknown,
-  reason: InvalidCalendarReason,
-  value: string | number,
+  code: InvalidCalendarFieldCode,
+  path: 'date' | 'days' = 'date',
 ): void {
   const error = captureError(action);
   expect(error).toBeInstanceOf(InvalidCalendarDateError);
+  expect(error).toBeInstanceOf(ValidationError);
   expect(error).toBeInstanceOf(DomainError);
-  expect(error).toMatchObject({ code: 'VALIDATION_ERROR', details: { reason, value } });
+  expect(error).toMatchObject({ code: 'VALIDATION_ERROR', fields: [{ path, code }] });
 }
 
 describe('CalendarDate', () => {
@@ -38,21 +39,21 @@ describe('CalendarDate', () => {
     it('accepts February 29 only in leap years', () => {
       expect(date('2028-02-29').toString()).toBe('2028-02-29');
       expect(date('2000-02-29').toString()).toBe('2000-02-29');
-      expectInvalidDate(() => date('2026-02-29'), 'INVALID_DATE', '2026-02-29');
-      expectInvalidDate(() => date('2100-02-29'), 'INVALID_DATE', '2100-02-29');
+      expectInvalidDate(() => date('2026-02-29'), 'INVALID_DATE');
+      expectInvalidDate(() => date('2100-02-29'), 'INVALID_DATE');
     });
 
     it.each(['2026-02-30', '2026-04-31', '2026-13-01', '2026-00-10', '2026-01-00', '0000-01-01'])(
       'rejects the nonexistent date %s',
       (value) => {
-        expectInvalidDate(() => date(value), 'INVALID_DATE', value);
+        expectInvalidDate(() => date(value), 'INVALID_DATE');
       },
     );
 
     it.each(['30-10-2026', '2026-1-05', '2026/01/05', '2026-01-05T00:00:00Z', '', ' 2026-01-05'])(
       'rejects the format %j',
       (value) => {
-        expectInvalidDate(() => date(value), 'INVALID_FORMAT', value);
+        expectInvalidDate(() => date(value), 'INVALID_FORMAT');
       },
     );
   });
@@ -64,7 +65,7 @@ describe('CalendarDate', () => {
     });
 
     it('rejects nonexistent dates', () => {
-      expectInvalidDate(() => CalendarDate.of(2026, 2, 30), 'INVALID_DATE', '2026-02-30');
+      expectInvalidDate(() => CalendarDate.of(2026, 2, 30), 'INVALID_DATE');
     });
   });
 
@@ -129,9 +130,9 @@ describe('CalendarDate', () => {
     });
 
     it('rejects non-integer days and dates beyond the supported years', () => {
-      expectInvalidDate(() => date('2026-10-30').addDays(1.5), 'OUT_OF_RANGE', 1.5);
-      expectInvalidDate(() => date('9999-12-31').addDays(1), 'OUT_OF_RANGE', 2932897);
-      expectInvalidDate(() => date('0001-01-01').addDays(-1), 'OUT_OF_RANGE', -719163);
+      expectInvalidDate(() => date('2026-10-30').addDays(1.5), 'OUT_OF_RANGE', 'days');
+      expectInvalidDate(() => date('9999-12-31').addDays(1), 'OUT_OF_RANGE', 'days');
+      expectInvalidDate(() => date('0001-01-01').addDays(-1), 'OUT_OF_RANGE', 'days');
     });
   });
 

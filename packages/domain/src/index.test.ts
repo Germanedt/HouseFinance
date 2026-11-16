@@ -10,5 +10,9 @@ describe('@hf/domain public API', () => {
     expect(publicApi.YearMonth.fromString('2026-11').toString()).toBe('2026-11');
     expect(publicApi.InvalidCalendarDateError).toBeTypeOf('function');
     expect(publicApi.InvalidYearMonthError).toBeTypeOf('function');
+    expect(new publicApi.NotFoundError('bill').code).toBe('NOT_FOUND');
+    expect(new publicApi.ValidationError([{ path: 'name', code: 'REQUIRED' }]).code).toBe(
+      'VALIDATION_ERROR',
+    );
   });
 });
