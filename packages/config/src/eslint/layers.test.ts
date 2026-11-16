@@ -28,4 +28,16 @@ describe('getRestrictedImportPatterns', () => {
     }
     expect(groups).toContain('@hf/ui');
   });
+
+  it('only lets test files import the in-memory port implementations', () => {
+    const sourceGroups = restrictedGroups('api');
+    expect(sourceGroups).toContain('@hf/application/testing');
+    expect(sourceGroups).toContain('!@hf/application/testing');
+
+    const testGroups = getRestrictedImportPatterns('api', { isTestFile: true }).flatMap(
+      (pattern) => [...pattern.group],
+    );
+    expect(testGroups).not.toContain('@hf/application/testing');
+    expect(testGroups).toContain('!@hf/application/testing');
+  });
 });

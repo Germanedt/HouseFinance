@@ -15,10 +15,25 @@ const DRIZZLE = ['drizzle-orm', 'drizzle-orm/*', 'drizzle-kit'];
 const SUPABASE = ['@supabase/*'];
 const ZOD = ['zod', 'zod/*'];
 
+/** Punto de entrada público con las implementaciones en memoria de los puertos. */
+const TESTING_ENTRY_POINT = '@hf/application/testing';
+
 /** Solo se importa la API pública de cada paquete, nunca sus rutas internas. */
 const PUBLIC_API_ONLY: RestrictedImportPattern = {
-  group: ['@hf/*/*'],
+  group: ['@hf/*/*', `!${TESTING_ENTRY_POINT}`],
   message: 'Importa solo la API pública del paquete (@hf/<nombre>), nunca sus rutas internas.',
+};
+
+/** Las implementaciones de prueba nunca llegan al código de producción. */
+const TESTING_ONLY_IN_TESTS: RestrictedImportPattern = {
+  group: [TESTING_ENTRY_POINT],
+  message:
+    'Las implementaciones de prueba (@hf/application/testing) solo se importan desde *.test.ts.',
+};
+
+export type RestrictedImportOptions = {
+  /** El archivo es una prueba (`*.test.ts`): puede usar @hf/application/testing. */
+  readonly isTestFile: boolean;
 };
 
 const LAYER_RESTRICTIONS: Readonly<Record<Layer, readonly RestrictedImportPattern[]>> = {
@@ -103,6 +118,10 @@ const LAYER_RESTRICTIONS: Readonly<Record<Layer, readonly RestrictedImportPatter
   ],
 };
 
-export function getRestrictedImportPatterns(layer: Layer): readonly RestrictedImportPattern[] {
-  return [PUBLIC_API_ONLY, ...LAYER_RESTRICTIONS[layer]];
+export function getRestrictedImportPatterns(
+  layer: Layer,
+  options: RestrictedImportOptions = { isTestFile: false },
+): readonly RestrictedImportPattern[] {
+  const testingRule = options.isTestFile ? [] : [TESTING_ONLY_IN_TESTS];
+  return [...testingRule, PUBLIC_API_ONLY, ...LAYER_RESTRICTIONS[layer]];
 }

@@ -22,4 +22,9 @@ export {
   type InvalidCalendarFieldCode,
   type InvalidMoneyFieldCode,
 } from './shared.errors.js';
+export {
+  InvalidCredentialsError,
+  InvalidRefreshTokenError,
+  UnauthenticatedError,
+} from './session.errors.js';
 export { YearMonth } from './YearMonth.value-object.js';
