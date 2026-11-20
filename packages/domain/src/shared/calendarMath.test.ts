@@ -66,11 +66,20 @@ describe('calendarMath', () => {
     it('matches the reference calendar every day from 1900 to 2100, both ways', () => {
       const first = toEpochDay({ year: 1900, month: 1, day: 1 });
       const last = toEpochDay({ year: 2100, month: 12, day: 31 });
+      // Se acumulan las diferencias y se comprueba una sola vez: ~73.000 días con un `expect`
+      // por día superan el tiempo límite en la CI con la cobertura activada.
+      const mismatches: number[] = [];
       for (let epochDay = first; epochDay <= last; epochDay += 1) {
         const civil = fromEpochDay(epochDay);
-        expect(referenceEpochDay(civil.year, civil.month, civil.day)).toBe(epochDay);
-        expect(toEpochDay(civil)).toBe(epochDay);
+        if (
+          referenceEpochDay(civil.year, civil.month, civil.day) !== epochDay ||
+          toEpochDay(civil) !== epochDay
+        ) {
+          mismatches.push(epochDay);
+        }
       }
+      expect(last - first + 1).toBe(73_414);
+      expect(mismatches).toEqual([]);
     });
 
     it('matches the reference calendar at the limits of the supported years', () => {

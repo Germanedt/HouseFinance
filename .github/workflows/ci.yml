@@ -1,7 +1,7 @@
-# CI de HouseFinance (F0-04).
+# CI de HouseFinance (F0-04, ampliada en F0-10).
 # Se ejecuta en cada pull request hacia main o hacia una rama de fase (feature/F<n>).
-# Orden: instalación con caché de pnpm → lint, typecheck y test solo en lo afectado → build.
-# F0-10 añade la comprobación de migraciones y las pruebas de integración con Postgres.
+# Orden: instalación con caché de pnpm → lint, typecheck y test solo en lo afectado
+#        → migraciones al día → pruebas de integración con Postgres (solo lo afectado) → build.
 name: CI
 
 on:
@@ -25,10 +25,31 @@ jobs:
     name: ci
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    # Postgres temporal para las pruebas de integración: se crea al empezar el job y se destruye
+    # al terminar. Misma versión mayor que Supabase (17). Nunca se conecta a Supabase.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     env:
       TURBO_TELEMETRY_DISABLED: 1
       # Base de `turbo --affected`: la rama de destino del pull request tal como la deja el checkout.
       TURBO_SCM_BASE: origin/${{ github.base_ref }}
+      # Las pruebas de integración crean en este servidor una base de datos temporal por ejecución.
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -50,6 +71,20 @@ jobs:
 
       - name: Lint, typecheck y test (solo lo afectado)
         run: pnpm turbo run lint typecheck test --affected
+
+      # Si el esquema de Drizzle cambió y no se generó su migración, `drizzle-kit generate` crea
+      # archivos nuevos en migrations/ y este paso falla. No necesita conexión a ninguna base de datos.
+      - name: Comprobar que no falta ninguna migración
+        run: |
+          pnpm --filter @hf/db db:generate
+          if [ -n "$(git status --porcelain -- packages/db/migrations)" ]; then
+            echo "::error::Falta una migración: ejecuta 'pnpm --filter @hf/db db:generate' y súbela."
+            git status --porcelain -- packages/db/migrations
+            exit 1
+          fi
+
+      - name: Pruebas de integración con Postgres (solo lo afectado)
+        run: pnpm turbo run test:integration --affected
 
       - name: Build
         run: pnpm turbo run build

@@ -1,0 +1,186 @@
+{
+  "id": "a1d3cb4c-2565-4db8-ba7b-4d75f005512b",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.job_runs": {
+      "name": "job_runs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "job": {
+          "name": "job",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "run_date": {
+          "name": "run_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "job_runs_job_run_date_unique": {
+          "name": "job_runs_job_run_date_unique",
+          "columns": [
+            {
+              "expression": "job",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "run_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {
+    "public.actor_type": {
+      "name": "actor_type",
+      "schema": "public",
+      "values": [
+        "person",
+        "bank",
+        "company",
+        "other"
+      ]
+    },
+    "public.bill_direction": {
+      "name": "bill_direction",
+      "schema": "public",
+      "values": [
+        "payable",
+        "receivable"
+      ]
+    },
+    "public.bill_status": {
+      "name": "bill_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "paid",
+        "collected"
+      ]
+    },
+    "public.due_day_rule": {
+      "name": "due_day_rule",
+      "schema": "public",
+      "values": [
+        "first_business_day",
+        "last_business_day",
+        "fixed_day"
+      ]
+    },
+    "public.frequency": {
+      "name": "frequency",
+      "schema": "public",
+      "values": [
+        "monthly",
+        "bimonthly",
+        "quarterly",
+        "semiannual",
+        "annual",
+        "one_time"
+      ]
+    },
+    "public.income_type": {
+      "name": "income_type",
+      "schema": "public",
+      "values": [
+        "salary",
+        "gift",
+        "donation",
+        "other"
+      ]
+    },
+    "public.movement_type": {
+      "name": "movement_type",
+      "schema": "public",
+      "values": [
+        "extra_payment",
+        "balance_adjustment"
+      ]
+    },
+    "public.notice_type": {
+      "name": "notice_type",
+      "schema": "public",
+      "values": [
+        "register_fixed_income"
+      ]
+    },
+    "public.obligation_status": {
+      "name": "obligation_status",
+      "schema": "public",
+      "values": [
+        "pending_confirmation",
+        "active",
+        "closed",
+        "cancelled"
+      ]
+    },
+    "public.obligation_type": {
+      "name": "obligation_type",
+      "schema": "public",
+      "values": [
+        "loan",
+        "service",
+        "receivable",
+        "credit_card"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

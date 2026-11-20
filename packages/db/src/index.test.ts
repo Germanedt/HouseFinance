@@ -1,10 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import * as publicApi from './index.js';
 
-// Prueba de ejemplo (F0-03): comprueba que el punto de entrada del paquete carga.
-// Las pruebas reales llegan con el código de cada tarea del backlog.
 describe('@hf/db public API', () => {
-  it('loads the package entry point', () => {
-    expect(publicApi).toBeTypeOf('object');
+  it('exposes the client, the unit of work, the executor and the schema', () => {
+    expect(publicApi.createDatabaseClient).toBeTypeOf('function');
+    expect(publicApi.DrizzleUnitOfWork).toBeTypeOf('function');
+    expect(publicApi.currentExecutor).toBeTypeOf('function');
+    expect(publicApi.jobRunsTable).toBeDefined();
+    expect(publicApi.billStatusEnum.enumValues).toEqual(['pending', 'paid', 'collected']);
+  });
+
+  it('creates a client without connecting until the first query', async () => {
+    const client = publicApi.createDatabaseClient({
+      connectionString: 'postgres://user:password@localhost:1/never',
+    });
+    expect(client.db).toBeDefined();
+    await expect(client.close()).resolves.toBeUndefined();
   });
 });
