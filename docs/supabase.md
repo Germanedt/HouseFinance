@@ -94,3 +94,27 @@ curl -s -X POST "$SUPABASE_URL/auth/v1/signup" \
 ```
 
 La respuesta debe ser un error que indique que el registro está desactivado (`signup_disabled`), y no aparecer ningún usuario nuevo en _Authentication → Users_.
+
+## 7. Migraciones de la base de datos
+
+El esquema vive en `packages/db/src/schema/` y las migraciones, en `packages/db/migrations/`. Las genera `drizzle-kit` a partir del esquema y **nunca se editan a mano**.
+
+1. **Al cambiar el esquema**, genera su migración y súbela junto al cambio:
+
+   ```sh
+   pnpm --filter @hf/db db:generate
+   ```
+
+   La CI falla si el esquema cambió y falta su migración.
+
+2. **Aplicar las migraciones pendientes en Supabase:**
+   - **A partir de la integración de la fase 0 en `main`**, con un workflow manual de GitHub Actions (_Actions → Run workflow_) que usa el secreto `MIGRATIONS_DATABASE_URL`, y automáticamente antes de cada despliegue (F0-13).
+   - **Desde tu ordenador**, si hiciera falta:
+
+     ```sh
+     MIGRATIONS_DATABASE_URL='postgresql://…:5432/postgres' pnpm --filter @hf/db db:migrate
+     ```
+
+   Drizzle registra las migraciones aplicadas en la tabla `drizzle.__drizzle_migrations`, así que aplicar dos veces no repite nada.
+
+3. **Pruebas de integración** (`pnpm --filter @hf/db test:integration`): necesitan `TEST_DATABASE_URL`, un Postgres local con permiso para crear bases de datos (nunca Supabase). Cada ejecución crea una base temporal, le aplica todas las migraciones y la borra al terminar.
